@@ -5,15 +5,21 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight } from "lucide-react";
-import { MODULES } from "@/lib/data";
+import { MODULES, INDUSTRIES, type Industry } from "@/lib/data";
 import { prefersReducedMotion } from "@/lib/utils";
+import { useIndustry } from "@/lib/industry-context";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
+type ModulesProps = { industry?: Industry };
+
 /** Pinned horizontal gallery — nine modules travel across the viewport. */
-export default function Modules() {
+export default function Modules({ industry }: ModulesProps) {
   const ref = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const { active } = useIndustry();
+  const shownIndustry = industry ?? INDUSTRIES[active];
+  const activeModules = shownIndustry.modules;
 
   useGSAP(
     () => {
@@ -61,7 +67,9 @@ export default function Modules() {
       <div className="flex h-svh flex-col justify-center">
         <div className="mx-auto mb-10 flex w-full max-w-[1680px] items-baseline justify-between px-5 md:mb-14 md:px-10">
           <p className="eyebrow">( 04 ) — The Platform</p>
-          <p className="eyebrow hidden md:block">Drag Through the System</p>
+          <p className="eyebrow hidden md:block">
+            In Play for <span className="eyebrow-accent">{shownIndustry.name}</span>
+          </p>
         </div>
 
         <div ref={trackRef} className="flex w-max items-stretch gap-4 px-5 will-change-transform md:gap-6 md:px-10">
@@ -82,26 +90,34 @@ export default function Modules() {
             </p>
           </div>
 
-          {MODULES.map((m) => (
+          {MODULES.map((m) => {
+            const inPlay = activeModules.includes(m.name);
+            return (
             <article
               key={m.index}
-              className="group relative flex w-[78vw] shrink-0 flex-col justify-between overflow-hidden border border-line bg-coal p-7 transition-colors duration-500 hover:border-line-strong sm:w-[420px] md:p-9"
+              className={`card-glass group relative flex w-[78vw] shrink-0 flex-col justify-between overflow-hidden border bg-coal p-7 transition-colors duration-500 sm:w-[420px] md:p-9 ${
+                inPlay ? "border-accent/60" : "border-line hover:border-line-strong"
+              }`}
             >
               <div
                 aria-hidden
-                className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-100"
-                style={{ background: "rgba(194,168,120,0.14)" }}
+                className="pointer-events-none absolute -top-24 -right-24 h-56 w-56 rounded-full blur-3xl transition-opacity duration-700 group-hover:opacity-100"
+                style={{ background: "rgba(194,168,120,0.14)", opacity: inPlay ? 0.7 : 0 }}
               />
               <div>
                 <div className="flex items-start justify-between">
                   <p className="font-mono text-[0.6875rem] tracking-[0.25em] text-grey">
                     /{m.index}
                   </p>
-                  {m.status === "soon" && (
+                  {inPlay ? (
+                    <span className="rounded-full border border-accent/50 px-3 py-1 font-mono text-[0.5625rem] uppercase tracking-[0.2em] text-accent">
+                      In Play
+                    </span>
+                  ) : m.status === "soon" ? (
                     <span className="rounded-full border border-accent/40 px-3 py-1 font-mono text-[0.5625rem] uppercase tracking-[0.2em] text-accent">
                       Coming Soon
                     </span>
-                  )}
+                  ) : null}
                 </div>
                 <h3 className="display mt-14 text-[clamp(1.8rem,3vw,2.6rem)] md:mt-20">
                   {m.name}
@@ -122,7 +138,8 @@ export default function Modules() {
                 ))}
               </ul>
             </article>
-          ))}
+            );
+          })}
 
           {/* outro panel */}
           <div className="flex w-[70vw] shrink-0 flex-col items-start justify-center pl-6 md:w-[30vw]">

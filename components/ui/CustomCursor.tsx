@@ -39,14 +39,16 @@ export default function CustomCursor() {
 
     const over = (e: MouseEvent) => {
       const t = e.target as HTMLElement;
+      const glow = t.closest("[data-cursor='glow'], .card-glass");
       const interactive = t.closest("a, button, [data-cursor='hover'], input, textarea, select, [role='button']");
       gsap.to(ring, {
-        scale: interactive ? 2.2 : 1,
-        opacity: interactive ? 0.4 : 1,
-        duration: 0.35,
+        scale: glow ? 3.4 : interactive ? 2.2 : 1,
+        opacity: glow ? 0.22 : interactive ? 0.4 : 1,
+        borderColor: glow ? "rgba(194,168,120,0.7)" : "rgba(239,237,231,0.4)",
+        duration: 0.4,
         ease: "power3.out",
       });
-      gsap.to(dot, { scale: interactive ? 0.4 : 1, duration: 0.35 });
+      gsap.to(dot, { scale: interactive || glow ? 0.4 : 1, duration: 0.35 });
     };
 
     const down = () => gsap.to(ring, { scale: 0.85, duration: 0.2 });

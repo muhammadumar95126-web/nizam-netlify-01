@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode } from "react";
+import Image from "next/image";
 import Reveal from "@/components/ui/Reveal";
 import FadeIn from "@/components/ui/FadeIn";
 
@@ -11,6 +12,8 @@ type PageHeroProps = {
   description?: ReactNode;
   children?: ReactNode;
   compact?: boolean;
+  /** optional full-bleed cinematic backdrop behind the title */
+  backdropImage?: string;
 };
 
 /** Standard inner-page opener — massive editorial title with entrance reveals. */
@@ -21,10 +24,35 @@ export default function PageHero({
   description,
   children,
   compact = false,
+  backdropImage,
 }: PageHeroProps) {
   return (
-    <section className={`section ${compact ? "pt-32 pb-16 md:pt-44 md:pb-24" : "pt-36 pb-20 md:pt-52 md:pb-32"}`}>
-      <div className="mx-auto max-w-[1680px] px-5 md:px-10">
+    <section
+      className={`section relative overflow-hidden ${compact ? "pt-32 pb-16 md:pt-44 md:pb-24" : "pt-36 pb-20 md:pt-52 md:pb-32"}`}
+    >
+      {backdropImage && (
+        <>
+          <div aria-hidden className="absolute inset-0">
+            <Image
+              src={backdropImage}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="scale-105 object-cover opacity-[0.22] grayscale"
+            />
+          </div>
+          <div
+            aria-hidden
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 70% 60% at 30% 20%, rgba(11,11,10,0.4), rgba(11,11,10,0.94) 78%)",
+            }}
+          />
+        </>
+      )}
+      <div className="relative mx-auto max-w-[1680px] px-5 md:px-10">
         <FadeIn immediate delay={0.25} className="mb-10 flex items-baseline justify-between md:mb-16">
           <p className="eyebrow">( {eyebrow} )</p>
           {meta && <p className="eyebrow eyebrow-accent hidden md:block">{meta}</p>}

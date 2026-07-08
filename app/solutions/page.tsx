@@ -9,7 +9,7 @@ const CTABand = dynamic(() => import("@/components/ui/CTABand"));
 export const metadata: Metadata = {
   title: "Solutions",
   description:
-    "Fragmentation, invisibility, slow response, asset blindness, unprovable work: the five failures of operations, and how NIZAM ends each one.",
+    "Fragmentation, invisibility, slow response, asset blindness, unprovable work: the five failures of operations, and how NizamOps ends each one.",
 };
 
 export default function SolutionsPage() {

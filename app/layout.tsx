@@ -37,11 +37,11 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://nizam.io"),
   title: {
-    default: "NIZAM · Built for Every Operation",
-    template: "%s · NIZAM",
+    default: "NizamOps · One Platform. Every Operation.",
+    template: "%s · NizamOps",
   },
   description:
-    "NIZAM is the enterprise operations platform. Service requests, incidents, maintenance, work orders, assets, field operations, inspections and analytics, unified in one system of record.",
+    "NizamOps is the enterprise operations platform. Service requests, incidents, maintenance, work orders, assets, field operations, inspections and analytics, unified in one system of record.",
   keywords: [
     "operations platform",
     "facility management software",
@@ -53,16 +53,16 @@ export const metadata: Metadata = {
     "CMMS",
   ],
   openGraph: {
-    title: "NIZAM · Built for Every Operation",
+    title: "NizamOps · One Platform. Every Operation.",
     description:
       "One platform for every operation. Service requests, maintenance, assets, field operations and analytics, unified.",
     type: "website",
     locale: "en_US",
-    siteName: "NIZAM",
+    siteName: "NizamOps",
   },
   twitter: {
     card: "summary_large_image",
-    title: "NIZAM · Built for Every Operation",
+    title: "NizamOps · One Platform. Every Operation.",
     description:
       "One platform for every operation. Launching soon.",
   },

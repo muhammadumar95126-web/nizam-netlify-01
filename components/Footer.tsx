@@ -7,12 +7,38 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowUp } from "lucide-react";
 import Magnetic from "@/components/ui/MagneticButton";
 import TransitionLink from "@/components/ui/TransitionLink";
-import { NAV_LINKS } from "@/lib/data";
 import { prefersReducedMotion } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const YEAR = new Date().getFullYear();
+
+const COLUMNS = [
+  {
+    heading: "Platform",
+    links: [
+      { label: "Platform", href: "/platform" },
+      { label: "Solutions", href: "/solutions" },
+      { label: "Industries", href: "/industries" },
+      { label: "Pricing", href: "/pricing" },
+    ],
+  },
+  {
+    heading: "Company",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Roadmap", href: "/roadmap" },
+      { label: "Contact", href: "/contact" },
+    ],
+  },
+];
+
+const RESOURCES = [
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
+  { label: "Documentation", soon: true },
+  { label: "API", soon: true },
+];
 
 export default function Footer() {
   const ref = useRef<HTMLElement>(null);
@@ -27,6 +53,16 @@ export default function Footer() {
         ease: "power4.out",
         scrollTrigger: { trigger: "[data-wordmark]", start: "top 96%", once: true },
       });
+      gsap.fromTo(
+        "[data-footer-glow]",
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 2,
+          ease: "power2.out",
+          scrollTrigger: { trigger: "[data-wordmark]", start: "top 96%", once: true },
+        }
+      );
     },
     { scope: ref }
   );
@@ -40,40 +76,65 @@ export default function Footer() {
   return (
     <footer ref={ref} className="section hairline-t overflow-hidden" aria-label="Footer">
       <div className="mx-auto max-w-[1680px] px-5 pt-20 pb-8 md:px-10 md:pt-28">
-        <div className="grid gap-14 md:grid-cols-12">
-          <div className="md:col-span-5">
-            <p className="eyebrow mb-4">NIZAM</p>
-            <p className="display max-w-sm text-2xl md:text-3xl">
-              Built for <em className="serif-i text-fog">Every</em> Operation.
-            </p>
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-fog/80">
-              The enterprise operations platform. Under disciplined
-              construction, launching 2026.
-            </p>
-          </div>
+        {/* brand statement */}
+        <div className="max-w-xl">
+          <p className="eyebrow mb-5">NizamOps</p>
+          <p className="display text-3xl md:text-4xl">
+            One Platform. <em className="serif-i text-fog">Every</em> Operation.
+          </p>
+          <p className="mt-6 max-w-md text-sm leading-relaxed text-fog/80">
+            The enterprise operating system for the physical world. Under
+            disciplined construction, launching 2026.
+          </p>
+        </div>
 
-          <nav aria-label="Footer" className="md:col-span-3">
-            <p className="eyebrow mb-6">Explore</p>
+        {/* columns */}
+        <div className="mt-20 grid gap-14 sm:grid-cols-2 md:mt-28 lg:grid-cols-4">
+          {COLUMNS.map((col) => (
+            <nav key={col.heading} aria-label={col.heading}>
+              <p className="eyebrow mb-6">{col.heading}</p>
+              <ul className="flex flex-col gap-3">
+                {col.links.map((l) => (
+                  <li key={l.href}>
+                    <TransitionLink
+                      href={l.href}
+                      className="text-sm text-fog transition-colors duration-300 hover:text-accent"
+                    >
+                      {l.label}
+                    </TransitionLink>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+
+          <nav aria-label="Resources">
+            <p className="eyebrow mb-6">Resources</p>
             <ul className="flex flex-col gap-3">
-              {[
-                ...NAV_LINKS,
-                { label: "Book Demo", href: "/book-demo" },
-                { label: "Join Waitlist", href: "/waitlist" },
-              ].map((l) => (
-                <li key={l.href}>
-                  <TransitionLink
-                    href={l.href}
-                    className="text-sm text-fog transition-colors duration-300 hover:text-accent"
-                  >
-                    {l.label}
-                  </TransitionLink>
-                </li>
-              ))}
+              {RESOURCES.map((r) =>
+                r.soon ? (
+                  <li key={r.label} className="flex items-center gap-2 text-sm text-fog/50">
+                    {r.label}
+                    <span className="font-mono text-[0.5625rem] uppercase tracking-[0.16em] text-grey">
+                      Soon
+                    </span>
+                  </li>
+                ) : (
+                  <li key={r.label}>
+                    <TransitionLink
+                      href={r.href!}
+                      className="text-sm text-fog transition-colors duration-300 hover:text-accent"
+                    >
+                      {r.label}
+                    </TransitionLink>
+                  </li>
+                )
+              )}
             </ul>
           </nav>
 
-          <div className="md:col-span-4">
-            <p className="eyebrow mb-6">Reach Us</p>
+          <div>
+            <p className="eyebrow mb-6">Contact</p>
             <ul className="flex flex-col gap-3 text-sm text-fog">
               <li>
                 <a href="mailto:hello@nizam.io" className="transition-colors duration-300 hover:text-accent">
@@ -86,15 +147,18 @@ export default function Footer() {
                 </a>
               </li>
               <li className="mt-4 flex gap-5">
-                {["LinkedIn", "X", "Instagram"].map((s) => (
-                  <a
+                {["LinkedIn", "Instagram", "X"].map((s) => (
+                  <Magnetic
                     key={s}
+                    as="a"
                     href="#top"
-                    aria-label={`NIZAM on ${s} (coming soon)`}
-                    className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-grey transition-colors duration-300 hover:text-paper"
+                    strength={0.4}
+                    data-cursor="glow"
+                    aria-label={`NizamOps on ${s} (coming soon)`}
+                    className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-grey transition-colors duration-300 hover:text-accent"
                   >
                     {s}
-                  </a>
+                  </Magnetic>
                 ))}
               </li>
             </ul>
@@ -111,29 +175,37 @@ export default function Footer() {
         </div>
 
         {/* colossal wordmark */}
-        <div className="mt-20 overflow-hidden md:mt-28" aria-hidden>
+        <div className="relative mt-20 overflow-hidden md:mt-28" aria-hidden>
+          <div
+            data-footer-glow
+            className="pointer-events-none absolute inset-0 opacity-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 55% 70% at 50% 60%, rgba(194,168,120,0.08), transparent 70%)",
+            }}
+          />
           <p
             data-wordmark
-            className="display select-none text-center text-[clamp(5rem,19.5vw,21rem)] leading-[0.8] tracking-[-0.02em] text-paper/[0.07]"
+            className="display relative select-none text-center text-[clamp(5rem,19.5vw,21rem)] leading-[0.8] tracking-[-0.02em] text-paper/[0.07]"
           >
-            NIZAM
+            NizamOps
           </p>
         </div>
 
         <div className="mt-6 flex flex-col items-center justify-between gap-3 border-t border-line pt-6 md:flex-row">
           <p className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-grey">
-            © {YEAR} NIZAM. All rights reserved.
+            © {YEAR} NizamOps. All rights reserved.
           </p>
           <p className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-grey">
             نظام · Order, in every operation
           </p>
           <div className="flex gap-6">
-            <a href="#top" className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-grey transition-colors hover:text-paper">
+            <TransitionLink href="/privacy" className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-grey transition-colors hover:text-paper">
               Privacy
-            </a>
-            <a href="#top" className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-grey transition-colors hover:text-paper">
+            </TransitionLink>
+            <TransitionLink href="/terms" className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-grey transition-colors hover:text-paper">
               Terms
-            </a>
+            </TransitionLink>
           </div>
         </div>
       </div>

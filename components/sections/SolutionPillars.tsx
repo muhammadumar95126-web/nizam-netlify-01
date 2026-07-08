@@ -8,7 +8,7 @@ import { SOLUTIONS } from "@/lib/data";
 /** Four pillars — alternating editorial image/text movements. */
 export default function SolutionPillars() {
   return (
-    <section className="section" aria-label="How NIZAM solves it">
+    <section className="section" aria-label="How NizamOps solves it">
       <div className="mx-auto flex max-w-[1680px] flex-col gap-28 px-5 pb-28 md:gap-44 md:px-10 md:pb-44">
         {SOLUTIONS.map((s, i) => {
           const flip = i % 2 === 1;

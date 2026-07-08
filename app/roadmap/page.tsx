@@ -8,7 +8,7 @@ const Waitlist = dynamic(() => import("@/components/sections/Waitlist"));
 export const metadata: Metadata = {
   title: "Roadmap",
   description:
-    "Watch NIZAM being built in the open: development progress, planned features, the AI horizon and the road to general availability in Q4 2026.",
+    "Watch NizamOps being built in the open: development progress, planned features, the AI horizon and the road to general availability in Q4 2026.",
 };
 
 export default function RoadmapPage() {

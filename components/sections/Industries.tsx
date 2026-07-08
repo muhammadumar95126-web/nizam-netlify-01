@@ -4,9 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import gsap from "gsap";
+import { ArrowUpRight } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 import FadeIn from "@/components/ui/FadeIn";
 import Marquee from "@/components/ui/Marquee";
+import TransitionLink from "@/components/ui/TransitionLink";
 import { INDUSTRIES } from "@/lib/data";
 import { prefersReducedMotion } from "@/lib/utils";
 
@@ -84,9 +86,9 @@ export default function Industries() {
 
         <FadeIn immediate delay={0.8} className="mt-8 max-w-xl md:mt-10">
           <p className="text-base leading-relaxed text-fog">
-            NIZAM is operation-agnostic by design. The same disciplined core,
+            NizamOps is operation-agnostic by design. The same disciplined core,
             configured to the rhythm of each industry it serves. Hover to
-            glimpse a world, then select one to see how it runs on NIZAM.
+            glimpse a world, then select one to see how it runs on NizamOps.
           </p>
         </FadeIn>
 
@@ -98,23 +100,23 @@ export default function Industries() {
           {INDUSTRIES.map((ind, i) => {
             const isActive = active === i;
             return (
-              <li key={ind.id} className="border-b border-line">
+              <li key={ind.id} className="relative overflow-hidden border-b border-line">
+                {/* invert wash */}
+                <motion.div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 bg-paper"
+                  initial={false}
+                  animate={{ y: isActive ? "0%" : "101%" }}
+                  transition={{ duration: 0.55, ease: EASE }}
+                />
                 <button
                   type="button"
                   onMouseEnter={() => setActive(i)}
                   onFocus={() => setActive(i)}
                   onClick={() => setActive(isActive ? null : i)}
                   aria-expanded={isActive}
-                  className="group relative block w-full cursor-pointer overflow-hidden text-left"
+                  className="group relative block w-full cursor-pointer text-left"
                 >
-                  {/* invert wash */}
-                  <motion.div
-                    aria-hidden
-                    className="absolute inset-0 bg-paper"
-                    initial={false}
-                    animate={{ y: isActive ? "0%" : "101%" }}
-                    transition={{ duration: 0.55, ease: EASE }}
-                  />
                   <div className="relative grid grid-cols-12 items-center gap-3 px-1 py-6 md:py-8">
                     <span
                       className={`eyebrow col-span-2 transition-colors duration-300 md:col-span-1 ${
@@ -138,46 +140,44 @@ export default function Industries() {
                       {ind.headline}
                     </span>
                     <span
-                      className={`hidden text-right transition-colors duration-300 md:col-span-2 md:block ${
-                        isActive ? "text-ink" : "text-fog/50"
+                      className={`hidden text-right text-sm leading-snug transition-colors duration-300 md:col-span-2 md:block ${
+                        isActive ? "text-grey" : "text-fog/50"
                       }`}
                     >
-                      <span className="font-display text-2xl font-medium tracking-tight">
-                        {ind.stat.value}
-                      </span>
-                      <span className="mt-0.5 block font-mono text-[0.5625rem] uppercase tracking-[0.18em]">
-                        {ind.stat.label}
-                      </span>
+                      {ind.benefit}
                     </span>
                   </div>
+                </button>
 
-                  {/* expanded detail */}
-                  <AnimatePresence initial={false}>
-                    {isActive && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.5, ease: EASE }}
-                        className="relative overflow-hidden"
-                      >
-                        <div className="grid gap-6 px-1 pb-8 md:grid-cols-12">
-                          <div className="relative hidden h-36 overflow-hidden rounded-sm md:col-span-3 md:col-start-2 md:block">
-                            <Image
-                              src={ind.image}
-                              alt={ind.name}
-                              fill
-                              sizes="25vw"
-                              className="object-cover"
-                            />
-                          </div>
-                          <div className="md:col-span-4">
-                            <p className="text-sm leading-relaxed text-grey">{ind.description}</p>
-                            <p className="mt-4 font-mono text-[0.625rem] uppercase tracking-[0.18em] text-grey/80">
-                              {ind.flow.join("  →  ")}
-                            </p>
-                          </div>
-                          <div className="flex flex-wrap content-start items-start gap-2 md:col-span-3 md:col-start-10">
+                {/* expanded detail */}
+                <AnimatePresence initial={false}>
+                  {isActive && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.5, ease: EASE }}
+                      className="relative overflow-hidden"
+                    >
+                      <div className="grid gap-6 px-1 pb-8 md:grid-cols-12">
+                        <div className="relative hidden h-36 overflow-hidden rounded-sm md:col-span-3 md:col-start-2 md:block">
+                          <Image
+                            src={ind.image}
+                            alt={ind.name}
+                            fill
+                            sizes="25vw"
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="md:col-span-4">
+                          <p className="text-sm leading-relaxed text-grey">{ind.description}</p>
+                          <p className="mt-3 text-sm leading-relaxed text-grey/80">{ind.useCase}</p>
+                          <p className="mt-4 font-mono text-[0.625rem] uppercase tracking-[0.18em] text-grey/80">
+                            {ind.flow.join("  →  ")}
+                          </p>
+                        </div>
+                        <div className="flex flex-col gap-4 md:col-span-3 md:col-start-10">
+                          <div className="flex flex-wrap content-start items-start gap-2">
                             {ind.modules.map((m) => (
                               <span
                                 key={m}
@@ -187,11 +187,21 @@ export default function Industries() {
                               </span>
                             ))}
                           </div>
+                          <TransitionLink
+                            href={`/industries/${ind.id}`}
+                            className="group/link inline-flex items-center gap-2 font-mono text-[0.625rem] uppercase tracking-[0.18em] text-ink"
+                          >
+                            Full industry page
+                            <ArrowUpRight
+                              size={12}
+                              className="transition-transform duration-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5"
+                            />
+                          </TransitionLink>
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </li>
             );
           })}

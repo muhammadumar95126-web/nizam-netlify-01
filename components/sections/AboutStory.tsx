@@ -25,7 +25,7 @@ export default function AboutStory() {
                   The built world is expanding faster than the discipline that
                   maintains it. Every new tower, terminal and campus adds
                   thousands of assets, and inherits decades-old ways of caring
-                  for them. NIZAM exists to close that gap: infrastructure-grade
+                  for them. NizamOps exists to close that gap: infrastructure-grade
                   software for the people who keep the physical world running.
                 </p>
               </FadeIn>

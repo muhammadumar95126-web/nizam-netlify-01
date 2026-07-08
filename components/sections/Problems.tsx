@@ -86,7 +86,7 @@ export default function Problems() {
           >
             Point solutions digitize tasks.{" "}
             <em className="serif-i text-accent-dim" style={{ color: "var(--accent-dim)" }}>
-              NIZAM unifies the operation.
+              NizamOps unifies the operation.
             </em>
           </Reveal>
         </div>

@@ -3,13 +3,14 @@ import dynamic from "next/dynamic";
 import Pricing from "@/components/sections/Pricing";
 import GovernmentBand from "@/components/sections/GovernmentBand";
 
+const TrustSecurity = dynamic(() => import("@/components/sections/TrustSecurity"));
 const FAQ = dynamic(() => import("@/components/sections/FAQ"));
 const CTABand = dynamic(() => import("@/components/ui/CTABand"));
 
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Honest pricing for serious software. Starter from $49/month, Professional $149, Business $299, and tailored Enterprise agreements for governments and nationwide organizations.",
+    "Honest pricing for serious software. Starter from $49/month, Professional $149, Business $299, and tailored Enterprise & Government agreements for nationwide organizations.",
 };
 
 export default function PricingPage() {
@@ -17,6 +18,7 @@ export default function PricingPage() {
     <main>
       <Pricing />
       <GovernmentBand />
+      <TrustSecurity index="03" />
       <FAQ />
       <CTABand
         title={

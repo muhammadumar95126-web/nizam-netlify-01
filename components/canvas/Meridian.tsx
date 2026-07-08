@@ -19,7 +19,7 @@ const PAPER = "239, 237, 231";
 const ACCENT = "194, 168, 120";
 
 /**
- * The NIZAM Meridian — a wireframe sphere of ordered nodes.
+ * The NizamOps Meridian — a wireframe sphere of ordered nodes.
  * Signals travel its meridians; nodes pulse as operations resolve.
  * Pure 2D-canvas 3D projection: no WebGL, ~60fps.
  */

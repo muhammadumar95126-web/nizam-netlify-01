@@ -5,12 +5,24 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, AlertTriangle, Wrench, ScanLine } from "lucide-react";
+import {
+  CheckCircle2,
+  AlertTriangle,
+  Wrench,
+  ScanLine,
+  Circle,
+  FileText,
+  Smartphone,
+} from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 import FadeIn from "@/components/ui/FadeIn";
 import { prefersReducedMotion } from "@/lib/utils";
+import { INDUSTRIES, type Industry } from "@/lib/data";
+import { useIndustry } from "@/lib/industry-context";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
+
+const EASE = [0.76, 0, 0.24, 1] as const;
 
 const KPIS = [
   { label: "Open work orders", value: 128, suffix: "", note: "−12% this week" },
@@ -18,6 +30,17 @@ const KPIS = [
   { label: "Assets online", value: 4213, suffix: "", note: "across 14 sites" },
   { label: "Avg. response", value: 11, suffix: "m", note: "door to dispatch" },
 ];
+
+const ROW_STATUSES = ["In Progress", "Scheduled", "Verified"] as const;
+
+function industryRows(ind: Industry) {
+  return ind.flow.slice(0, 3).map((step, i) => ({
+    id: `WO-48${20 + i}`,
+    title: step,
+    site: ind.name,
+    status: ROW_STATUSES[i],
+  }));
+}
 
 const FEED = [
   { icon: CheckCircle2, text: "WO-4821 verified · Tower B, HVAC" },
@@ -28,11 +51,63 @@ const FEED = [
   { icon: Wrench, text: "Crew dispatched · Block C elevator" },
 ];
 
-const ROWS = [
-  { id: "WO-4832", title: "Cooling tower vibration", site: "Plant 2", status: "In Progress" },
-  { id: "WO-4833", title: "Lobby lighting survey", site: "Tower A", status: "Scheduled" },
-  { id: "WO-4829", title: "Fire pump quarterly test", site: "Basement 1", status: "Verified" },
+const WORK_ORDERS = [
+  { id: "WO-4832", title: "Cooling tower vibration", assignee: "R. Farooq", status: "In Progress" },
+  { id: "WO-4833", title: "Lobby lighting survey", assignee: "S. Malik", status: "Scheduled" },
+  { id: "WO-4829", title: "Fire pump quarterly test", assignee: "A. Raza", status: "Verified" },
+  { id: "WO-4827", title: "Elevator brake inspection", assignee: "K. Iqbal", status: "In Progress" },
+  { id: "WO-4824", title: "Generator load test", assignee: "R. Farooq", status: "Verified" },
+  { id: "WO-4820", title: "Rooftop leak repair", assignee: "S. Malik", status: "Scheduled" },
 ];
+
+const ASSETS = [
+  { name: "Chiller Unit 07", location: "Plant Room, B1", condition: "Good", warranty: "Active" },
+  { name: "Generator G-114", location: "Backup Yard", condition: "Fair", warranty: "Active" },
+  { name: "Elevator EL-03", location: "Tower A Core", condition: "Good", warranty: "Expired" },
+  { name: "Fire Pump FP-02", location: "Basement 1", condition: "Good", warranty: "Active" },
+  { name: "AHU-11", location: "Roof, Zone C", condition: "Attention", warranty: "Active" },
+  { name: "Transformer T-1", location: "Substation", condition: "Good", warranty: "Expired" },
+];
+
+const ANALYTICS_BARS = [
+  { label: "Government", value: 92 },
+  { label: "Housing", value: 88 },
+  { label: "Hotels", value: 95 },
+  { label: "Hospitals", value: 97 },
+  { label: "Factories", value: 84 },
+];
+
+const INSPECTIONS = [
+  { name: "Fire safety round", site: "Tower A", score: 96, status: "Passed" },
+  { name: "Kitchen hygiene audit", site: "Hotel West Wing", score: 89, status: "Passed" },
+  { name: "Elevator safety check", site: "Block C", score: 72, status: "Follow-up" },
+  { name: "HVAC filter inspection", site: "Plant 2", score: 100, status: "Passed" },
+];
+
+const MOBILE_TASKS = [
+  { title: "Inspect chiller 07", site: "Plant Room", time: "09:15" },
+  { title: "Replace lobby ballast", site: "Tower A", time: "10:40" },
+  { title: "Verify WO-4829", site: "Basement 1", time: "13:00" },
+];
+
+const REPORTS = [
+  { name: "Monthly SLA Summary", range: "Jun 2026", format: "PDF" },
+  { name: "Asset Lifecycle Report", range: "Q2 2026", format: "XLSX" },
+  { name: "Incident Log Export", range: "Jun 2026", format: "CSV" },
+  { name: "Inspection Compliance", range: "Q2 2026", format: "PDF" },
+];
+
+const TABS = [
+  { id: "command", label: "Command Center" },
+  { id: "orders", label: "Work Orders" },
+  { id: "assets", label: "Assets" },
+  { id: "analytics", label: "Analytics" },
+  { id: "inspections", label: "Inspections" },
+  { id: "mobile", label: "Mobile App" },
+  { id: "reports", label: "Reports" },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
 
 /* 30-day work-order volume, hand-tuned for a pleasing line */
 const SPARK = [42, 44, 41, 46, 45, 49, 47, 52, 50, 48, 53, 55, 52, 57, 56, 60, 58, 55, 59, 62, 60, 64, 61, 66, 68, 65, 70, 69, 73, 76];
@@ -49,16 +124,25 @@ function sparkPath(w: number, h: number, pad = 4) {
   return { d, area: `${d} L${last[0].toFixed(1)},${h - pad} L${pad},${h - pad} Z`, last };
 }
 
-export default function Dashboard({ index = "05" }: { index?: string }) {
+function fmt(value: number) {
+  const decimals = value % 1 !== 0 ? 1 : 0;
+  return value.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+export default function Dashboard({ index = "05", industry }: { index?: string; industry?: Industry }) {
   const ref = useRef<HTMLElement>(null);
+  const [tab, setTab] = useState<TabId>("command");
   const [feedIdx, setFeedIdx] = useState(3);
   const { d, area, last } = sparkPath(560, 180);
+  const { active } = useIndustry();
+  const ind = industry ?? INDUSTRIES[active];
+  const rows = industryRows(ind);
 
   useEffect(() => {
-    if (prefersReducedMotion()) return;
+    if (prefersReducedMotion() || tab !== "command") return;
     const id = setInterval(() => setFeedIdx((i) => i + 1), 2600);
     return () => clearInterval(id);
-  }, []);
+  }, [tab]);
 
   useGSAP(
     () => {
@@ -153,9 +237,9 @@ export default function Dashboard({ index = "05" }: { index?: string }) {
           </Reveal>
           <FadeIn className="md:col-span-4">
             <p className="max-w-sm text-base leading-relaxed text-fog">
-              Live work, live assets, live accountability. The command center
-              your operation has been missing, designed to be read at a
-              glance and trusted at a board meeting.
+              Live work, live assets, live accountability. Seven views into
+              the same operation, designed to be read at a glance and
+              trusted at a board meeting.
             </p>
           </FadeIn>
         </div>
@@ -163,7 +247,7 @@ export default function Dashboard({ index = "05" }: { index?: string }) {
         <div data-console-wrap style={{ perspective: "1600px" }}>
           <div
             data-console
-            aria-label="Representative preview of the NIZAM operations dashboard"
+            aria-label="Representative preview of the NizamOps operations dashboard"
             className="overflow-hidden rounded-xl border border-line-strong bg-smoke shadow-[0_60px_120px_-40px_rgba(0,0,0,0.8)] will-change-transform"
           >
             {/* window chrome */}
@@ -175,7 +259,7 @@ export default function Dashboard({ index = "05" }: { index?: string }) {
                   <span className="h-2 w-2 rounded-full bg-grey/25" />
                 </div>
                 <p className="font-mono text-[0.625rem] uppercase tracking-[0.22em] text-fog">
-                  NIZAM · Operations Command
+                  NizamOps · {ind.name} Operations Command
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -187,144 +271,344 @@ export default function Dashboard({ index = "05" }: { index?: string }) {
               </div>
             </div>
 
-            {/* KPI tiles */}
-            <div className="grid grid-cols-2 gap-px border-b border-line bg-line lg:grid-cols-4">
-              {KPIS.map((k) => (
-                <div key={k.label} className="bg-smoke px-5 py-6 md:px-7 md:py-8">
-                  <p className="font-mono text-[0.5625rem] uppercase tracking-[0.2em] text-grey">
-                    {k.label}
-                  </p>
-                  <p className="mt-3 font-display text-3xl font-medium tracking-tight text-paper tabular-nums md:text-4xl">
-                    <span data-count={k.value}>0</span>
-                    {k.suffix}
-                  </p>
-                  <p className="mt-2 font-mono text-[0.5625rem] tracking-[0.12em] text-fog/70">
-                    {k.note}
-                  </p>
-                </div>
+            {/* tab strip */}
+            <div className="flex gap-1.5 overflow-x-auto border-b border-line px-5 py-3 md:px-7" role="tablist">
+              {TABS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === t.id}
+                  onClick={() => setTab(t.id)}
+                  className={`shrink-0 cursor-pointer rounded-full border px-3.5 py-1.5 font-mono text-[0.5625rem] uppercase tracking-[0.16em] transition-colors duration-300 ${
+                    tab === t.id
+                      ? "border-accent bg-accent text-ink"
+                      : "border-line text-fog hover:border-line-strong hover:text-paper"
+                  }`}
+                >
+                  {t.label}
+                </button>
               ))}
             </div>
 
-            <div className="grid lg:grid-cols-3">
-              {/* volume chart */}
-              <div className="border-b border-line p-5 md:p-7 lg:col-span-2 lg:border-r lg:border-b-0">
-                <div className="mb-5 flex items-baseline justify-between">
-                  <p className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-fog">
-                    Work-order volume · 30 days
-                  </p>
-                  <p className="font-mono text-[0.625rem] tracking-[0.12em] text-accent tabular-nums">
-                    76 today
-                  </p>
-                </div>
-                <svg
-                  viewBox="0 0 560 180"
-                  className="h-auto w-full"
-                  role="img"
-                  aria-label="Line chart: work-order volume rising from 42 to 76 over 30 days"
-                >
-                  {[45, 90, 135].map((y) => (
-                    <line key={y} x1="4" x2="556" y1={y} y2={y} stroke="var(--line)" strokeWidth="1" />
-                  ))}
-                  <defs>
-                    <linearGradient id="sparkfill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(194,168,120,0.22)" />
-                      <stop offset="100%" stopColor="rgba(194,168,120,0)" />
-                    </linearGradient>
-                  </defs>
-                  <path data-spark-fill d={area} fill="url(#sparkfill)" />
-                  <path
-                    data-spark-line
-                    d={d}
-                    fill="none"
-                    stroke="var(--accent)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx={last[0]} cy={last[1]} r="3.5" fill="var(--accent)" />
-                </svg>
-
-                {/* mini table */}
-                <div className="mt-6 border-t border-line">
-                  {ROWS.map((r) => (
-                    <div
-                      key={r.id}
-                      className="flex items-center justify-between gap-3 border-b border-line py-3 last:border-b-0"
-                    >
-                      <p className="font-mono text-[0.625rem] tracking-[0.14em] text-grey tabular-nums">
-                        {r.id}
-                      </p>
-                      <p className="flex-1 truncate text-[0.8125rem] text-paper/90">{r.title}</p>
-                      <p className="hidden font-mono text-[0.625rem] tracking-[0.14em] text-fog/70 sm:block">
-                        {r.site}
-                      </p>
-                      <span
-                        className={`shrink-0 rounded-full border px-2.5 py-1 font-mono text-[0.5625rem] uppercase tracking-[0.14em] ${
-                          r.status === "Verified"
-                            ? "border-accent/45 text-accent"
-                            : "border-line-strong text-fog"
-                        }`}
-                      >
-                        {r.status}
-                      </span>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={tab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.4, ease: EASE }}
+              >
+                {tab === "command" && (
+                  <>
+                    {/* KPI tiles */}
+                    <div className="grid grid-cols-2 gap-px border-b border-line bg-line lg:grid-cols-4">
+                      {KPIS.map((k) => (
+                        <div key={k.label} className="bg-smoke px-5 py-6 md:px-7 md:py-8">
+                          <p className="font-mono text-[0.5625rem] uppercase tracking-[0.2em] text-grey">
+                            {k.label}
+                          </p>
+                          <p className="mt-3 font-display text-3xl font-medium tracking-tight text-paper tabular-nums md:text-4xl">
+                            <span data-count={k.value}>{fmt(k.value)}</span>
+                            {k.suffix}
+                          </p>
+                          <p className="mt-2 font-mono text-[0.5625rem] tracking-[0.12em] text-fog/70">
+                            {k.note}
+                          </p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
 
-              {/* live feed */}
-              <div className="p-5 md:p-7">
-                <p className="mb-5 font-mono text-[0.625rem] uppercase tracking-[0.2em] text-fog">
-                  Live activity
-                </p>
-                <div className="flex min-h-[220px] flex-col gap-2.5" aria-hidden>
-                  <AnimatePresence initial={false}>
-                    {visibleFeed.map((f) => (
-                      <motion.div
-                        key={f.key}
-                        layout
-                        initial={{ opacity: 0, y: -16 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.45, ease: [0.25, 0.6, 0.3, 1] }}
-                        className="flex items-center gap-3 rounded-md border border-line bg-coal px-4 py-3.5"
-                      >
-                        <f.icon size={14} className="shrink-0 text-accent" strokeWidth={1.75} />
-                        <p className="truncate text-[0.8125rem] text-paper/85">{f.text}</p>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </div>
+                    <div className="grid lg:grid-cols-3">
+                      {/* volume chart */}
+                      <div className="border-b border-line p-5 md:p-7 lg:col-span-2 lg:border-r lg:border-b-0">
+                        <div className="mb-5 flex items-baseline justify-between">
+                          <p className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-fog">
+                            Work-order volume · 30 days
+                          </p>
+                          <p className="font-mono text-[0.625rem] tracking-[0.12em] text-accent tabular-nums">
+                            76 today
+                          </p>
+                        </div>
+                        <svg
+                          viewBox="0 0 560 180"
+                          className="h-auto w-full"
+                          role="img"
+                          aria-label="Line chart: work-order volume rising from 42 to 76 over 30 days"
+                        >
+                          {[45, 90, 135].map((y) => (
+                            <line key={y} x1="4" x2="556" y1={y} y2={y} stroke="var(--line)" strokeWidth="1" />
+                          ))}
+                          <defs>
+                            <linearGradient id="sparkfill" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="rgba(194,168,120,0.22)" />
+                              <stop offset="100%" stopColor="rgba(194,168,120,0)" />
+                            </linearGradient>
+                          </defs>
+                          <path data-spark-fill d={area} fill="url(#sparkfill)" />
+                          <path
+                            data-spark-line
+                            d={d}
+                            fill="none"
+                            stroke="var(--accent)"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <circle cx={last[0]} cy={last[1]} r="3.5" fill="var(--accent)" />
+                        </svg>
 
-                {/* SLA arc */}
-                <div className="mt-6 flex items-center gap-5 border-t border-line pt-6">
-                  <svg viewBox="0 0 80 80" className="h-16 w-16 shrink-0" role="img" aria-label="SLA gauge at 98.2 percent">
-                    <circle cx="40" cy="40" r="34" fill="none" stroke="var(--line)" strokeWidth="4" />
-                    <circle
-                      cx="40" cy="40" r="34" fill="none"
-                      stroke="var(--accent)" strokeWidth="4" strokeLinecap="round"
-                      strokeDasharray={`${0.982 * 213.6} 213.6`}
-                      transform="rotate(-90 40 40)"
-                    />
-                    <text
-                      x="40" y="44" textAnchor="middle"
-                      className="fill-paper"
-                      style={{ font: "600 13px var(--font-archivo), sans-serif" }}
-                    >
-                      98%
-                    </text>
-                  </svg>
-                  <div>
-                    <p className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-fog">
-                      SLA this month
+                        {/* mini table */}
+                        <div className="mt-6 border-t border-line">
+                          {rows.map((r) => (
+                            <div
+                              key={r.id}
+                              className="flex items-center justify-between gap-3 border-b border-line py-3 last:border-b-0"
+                            >
+                              <p className="font-mono text-[0.625rem] tracking-[0.14em] text-grey tabular-nums">
+                                {r.id}
+                              </p>
+                              <p className="flex-1 truncate text-[0.8125rem] text-paper/90">{r.title}</p>
+                              <p className="hidden font-mono text-[0.625rem] tracking-[0.14em] text-fog/70 sm:block">
+                                {r.site}
+                              </p>
+                              <span
+                                className={`shrink-0 rounded-full border px-2.5 py-1 font-mono text-[0.5625rem] uppercase tracking-[0.14em] ${
+                                  r.status === "Verified"
+                                    ? "border-accent/45 text-accent"
+                                    : "border-line-strong text-fog"
+                                }`}
+                              >
+                                {r.status}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* live feed */}
+                      <div className="p-5 md:p-7">
+                        <p className="mb-5 font-mono text-[0.625rem] uppercase tracking-[0.2em] text-fog">
+                          Live activity
+                        </p>
+                        <div className="flex min-h-[220px] flex-col gap-2.5" aria-hidden>
+                          <AnimatePresence initial={false}>
+                            {visibleFeed.map((f) => (
+                              <motion.div
+                                key={f.key}
+                                layout
+                                initial={{ opacity: 0, y: -16 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.45, ease: [0.25, 0.6, 0.3, 1] }}
+                                className="flex items-center gap-3 rounded-md border border-line bg-coal px-4 py-3.5"
+                              >
+                                <f.icon size={14} className="shrink-0 text-accent" strokeWidth={1.75} />
+                                <p className="truncate text-[0.8125rem] text-paper/85">{f.text}</p>
+                              </motion.div>
+                            ))}
+                          </AnimatePresence>
+                        </div>
+
+                        {/* SLA arc */}
+                        <div className="mt-6 flex items-center gap-5 border-t border-line pt-6">
+                          <svg viewBox="0 0 80 80" className="h-16 w-16 shrink-0" role="img" aria-label="SLA gauge at 98.2 percent">
+                            <circle cx="40" cy="40" r="34" fill="none" stroke="var(--line)" strokeWidth="4" />
+                            <circle
+                              cx="40" cy="40" r="34" fill="none"
+                              stroke="var(--accent)" strokeWidth="4" strokeLinecap="round"
+                              strokeDasharray={`${0.982 * 213.6} 213.6`}
+                              transform="rotate(-90 40 40)"
+                            />
+                            <text
+                              x="40" y="44" textAnchor="middle"
+                              className="fill-paper"
+                              style={{ font: "600 13px var(--font-archivo), sans-serif" }}
+                            >
+                              98%
+                            </text>
+                          </svg>
+                          <div>
+                            <p className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-fog">
+                              SLA this month
+                            </p>
+                            <p className="mt-1 text-[0.8125rem] leading-snug text-fog/80">
+                              Evidence-backed, exportable, board-ready.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {tab === "orders" && (
+                  <div className="p-5 md:p-7">
+                    <p className="mb-5 font-mono text-[0.625rem] uppercase tracking-[0.2em] text-fog">
+                      Open work orders
                     </p>
-                    <p className="mt-1 text-[0.8125rem] leading-snug text-fog/80">
-                      Evidence-backed, exportable, board-ready.
-                    </p>
+                    <div className="border-t border-line">
+                      {WORK_ORDERS.map((r) => (
+                        <div
+                          key={r.id}
+                          className="flex items-center justify-between gap-3 border-b border-line py-3.5"
+                        >
+                          <p className="w-20 shrink-0 font-mono text-[0.625rem] tracking-[0.14em] text-grey tabular-nums">
+                            {r.id}
+                          </p>
+                          <p className="flex-1 truncate text-[0.8125rem] text-paper/90">{r.title}</p>
+                          <p className="hidden font-mono text-[0.625rem] tracking-[0.14em] text-fog/70 sm:block">
+                            {r.assignee}
+                          </p>
+                          <span
+                            className={`shrink-0 rounded-full border px-2.5 py-1 font-mono text-[0.5625rem] uppercase tracking-[0.14em] ${
+                              r.status === "Verified"
+                                ? "border-accent/45 text-accent"
+                                : "border-line-strong text-fog"
+                            }`}
+                          >
+                            {r.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
+                )}
+
+                {tab === "assets" && (
+                  <div className="grid grid-cols-1 gap-px border-t border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+                    {ASSETS.map((a) => (
+                      <div key={a.name} className="bg-smoke p-6">
+                        <p className="text-[0.9375rem] text-paper">{a.name}</p>
+                        <p className="mt-1 font-mono text-[0.625rem] uppercase tracking-[0.16em] text-fog/70">
+                          {a.location}
+                        </p>
+                        <div className="mt-4 flex items-center justify-between">
+                          <span
+                            className={`rounded-full border px-2.5 py-1 font-mono text-[0.5625rem] uppercase tracking-[0.14em] ${
+                              a.condition === "Attention"
+                                ? "border-amber-400/40 text-amber-300"
+                                : "border-line-strong text-fog"
+                            }`}
+                          >
+                            {a.condition}
+                          </span>
+                          <span className="font-mono text-[0.5625rem] uppercase tracking-[0.14em] text-fog/60">
+                            Warranty · {a.warranty}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {tab === "analytics" && (
+                  <div className="p-5 md:p-7">
+                    <p className="mb-6 font-mono text-[0.625rem] uppercase tracking-[0.2em] text-fog">
+                      SLA compliance by industry
+                    </p>
+                    <div className="flex flex-col gap-4">
+                      {ANALYTICS_BARS.map((b) => (
+                        <div key={b.label} className="flex items-center gap-4">
+                          <p className="w-28 shrink-0 font-mono text-[0.625rem] uppercase tracking-[0.14em] text-fog/80">
+                            {b.label}
+                          </p>
+                          <div className="h-1.5 flex-1 rounded-full bg-line">
+                            <div
+                              className="h-1.5 rounded-full bg-accent"
+                              style={{ width: `${b.value}%` }}
+                            />
+                          </div>
+                          <p className="w-10 shrink-0 text-right font-mono text-[0.625rem] tabular-nums text-paper/80">
+                            {b.value}%
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {tab === "inspections" && (
+                  <div className="p-5 md:p-7">
+                    <p className="mb-5 font-mono text-[0.625rem] uppercase tracking-[0.2em] text-fog">
+                      Recent inspections
+                    </p>
+                    <div className="border-t border-line">
+                      {INSPECTIONS.map((i) => (
+                        <div key={i.name} className="flex items-center justify-between gap-3 border-b border-line py-3.5">
+                          <div className="flex items-center gap-3">
+                            {i.status === "Passed" ? (
+                              <CheckCircle2 size={14} className="shrink-0 text-accent" strokeWidth={1.75} />
+                            ) : (
+                              <Circle size={14} className="shrink-0 text-fog/60" strokeWidth={1.75} />
+                            )}
+                            <div>
+                              <p className="text-[0.8125rem] text-paper/90">{i.name}</p>
+                              <p className="font-mono text-[0.5625rem] uppercase tracking-[0.14em] text-fog/60">
+                                {i.site}
+                              </p>
+                            </div>
+                          </div>
+                          <p className="font-mono text-[0.625rem] tabular-nums text-fog/80">{i.score}/100</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {tab === "mobile" && (
+                  <div className="flex justify-center p-5 md:p-10">
+                    <div className="w-full max-w-[300px] rounded-2xl border border-line-strong bg-coal p-3">
+                      <div className="flex items-center gap-2 px-2 pb-3 pt-1">
+                        <Smartphone size={13} className="text-accent" strokeWidth={1.75} />
+                        <p className="font-mono text-[0.5625rem] uppercase tracking-[0.16em] text-fog">
+                          Field App · Today
+                        </p>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        {MOBILE_TASKS.map((t) => (
+                          <div key={t.title} className="rounded-lg border border-line bg-smoke p-3.5">
+                            <div className="flex items-center justify-between">
+                              <p className="text-[0.8125rem] text-paper/90">{t.title}</p>
+                              <p className="font-mono text-[0.5625rem] tabular-nums text-accent">{t.time}</p>
+                            </div>
+                            <p className="mt-1 font-mono text-[0.5625rem] uppercase tracking-[0.14em] text-fog/60">
+                              {t.site}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {tab === "reports" && (
+                  <div className="p-5 md:p-7">
+                    <p className="mb-5 font-mono text-[0.625rem] uppercase tracking-[0.2em] text-fog">
+                      Exportable reports
+                    </p>
+                    <div className="border-t border-line">
+                      {REPORTS.map((r) => (
+                        <div key={r.name} className="flex items-center justify-between gap-3 border-b border-line py-3.5">
+                          <div className="flex items-center gap-3">
+                            <FileText size={14} className="shrink-0 text-accent" strokeWidth={1.75} />
+                            <div>
+                              <p className="text-[0.8125rem] text-paper/90">{r.name}</p>
+                              <p className="font-mono text-[0.5625rem] uppercase tracking-[0.14em] text-fog/60">
+                                {r.range}
+                              </p>
+                            </div>
+                          </div>
+                          <span className="rounded-full border border-line-strong px-2.5 py-1 font-mono text-[0.5625rem] uppercase tracking-[0.14em] text-fog">
+                            {r.format}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
 
           <p className="eyebrow mt-6 text-center text-fog/50">

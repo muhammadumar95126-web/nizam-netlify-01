@@ -51,6 +51,18 @@ export default function CTABand({
         <FadeIn className="mx-auto mt-8 max-w-lg">
           <p className="text-base leading-relaxed text-fog">{subtitle}</p>
         </FadeIn>
+        <FadeIn
+          staggerChildren={0.06}
+          className="mx-auto mt-8 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2"
+        >
+          {["Priority onboarding", "Founding pricing", "Direct product feedback", "Private beta access"].map(
+            (perk) => (
+              <span key={perk} className="eyebrow !text-fog/60">
+                {perk}
+              </span>
+            )
+          )}
+        </FadeIn>
         <FadeIn className="mt-12 flex flex-wrap items-center justify-center gap-4">
           <Magnetic as={TransitionLink} href="/book-demo" strength={0.25} className="btn btn-solid">
             Book Demo

@@ -150,8 +150,41 @@ body {
 }
 
 /* ——— Hairlines ——— */
-.hairline-t { border-top: 1px solid var(--line); }
+.hairline-t { position: relative; border-top: 1px solid var(--line); }
 .hairline-b { border-bottom: 1px solid var(--line); }
+
+/* soft seam glow — the next section's opening feels lit, not cut */
+.hairline-t::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 140px;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(194, 168, 120, 0.05) 55%, transparent);
+}
+
+/* ——— Glass card hover ——— */
+.card-glass {
+  position: relative;
+  transition: border-color 0.5s ease, background-color 0.5s ease;
+}
+.card-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(160deg, rgba(239, 237, 231, 0.08), transparent 55%);
+  transition: opacity 0.5s ease;
+}
+.card-glass:hover::before { opacity: 1; }
+.card-glass:hover {
+  background-color: rgba(20, 20, 19, 0.92);
+  backdrop-filter: blur(6px);
+  border-color: rgba(194, 168, 120, 0.35);
+}
 
 /* ——— Marquee ——— */
 @keyframes marquee-x {

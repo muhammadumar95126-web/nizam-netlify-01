@@ -79,7 +79,7 @@ export default function HowItWorks() {
       <div className="mx-auto max-w-[1680px] px-5 py-28 md:px-10 md:py-44">
         <div className="mb-14 flex items-baseline justify-between md:mb-20">
           <p className="eyebrow">( 03 ) — The Loop</p>
-          <p className="eyebrow hidden md:block">How NIZAM Runs</p>
+          <p className="eyebrow hidden md:block">How NizamOps Runs</p>
         </div>
 
         <Reveal as="h2" id="how-title" className="display max-w-4xl text-[clamp(2.4rem,6vw,5.5rem)]">

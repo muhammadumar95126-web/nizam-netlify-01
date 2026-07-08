@@ -9,7 +9,7 @@ const CAPABILITIES = [
   {
     index: "A1",
     name: "Predictive Maintenance",
-    body: "Failure patterns detected before they become failures. NIZAM schedules the fix while the asset still works.",
+    body: "Failure patterns detected before they become failures. NizamOps schedules the fix while the asset still works.",
   },
   {
     index: "A2",
@@ -23,7 +23,7 @@ const CAPABILITIES = [
   },
   {
     index: "A4",
-    name: "Ask NIZAM",
+    name: "Ask NizamOps",
     body: "“Which assets cost us the most last quarter?” Plain language in, operational truth out.",
   },
 ];
@@ -52,7 +52,7 @@ export default function AISection({ index = "06" }: { index?: string }) {
 
         <div className="text-center">
           <FadeIn as="p" className="eyebrow mb-6">
-            NIZAM AI
+            NizamOps AI
           </FadeIn>
           <Reveal
             as="h2"
@@ -65,7 +65,7 @@ export default function AISection({ index = "06" }: { index?: string }) {
           </Reveal>
           <FadeIn className="mx-auto mt-8 max-w-xl">
             <p className="text-base leading-relaxed text-fog">
-              The platform already sees everything. Next, it learns. NIZAM AI
+              The platform already sees everything. Next, it learns. NizamOps AI
               turns your operational history into foresight, quietly, safely,
               and on your terms.
             </p>

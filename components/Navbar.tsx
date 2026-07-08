@@ -59,10 +59,10 @@ export default function Navbar() {
         <div className="flex items-center justify-between px-5 py-5 md:px-10 md:py-6">
           <TransitionLink
             href="/"
-            aria-label="NIZAM home"
+            aria-label="NizamOps home"
             className="font-display text-lg font-semibold tracking-[0.32em] text-white"
           >
-            NIZAM
+            NizamOps
           </TransitionLink>
 
           <nav aria-label="Primary" className="hidden items-center gap-7 lg:flex">
@@ -170,7 +170,7 @@ export default function Navbar() {
               exit={{ opacity: 0, transition: { duration: 0.25 } }}
               transition={{ delay: 0.6, duration: 0.8 }}
             >
-              <p className="eyebrow">Built for Every Operation</p>
+              <p className="eyebrow">One Platform. Every Operation.</p>
               <a
                 href="mailto:hello@nizam.io"
                 className="font-sans text-sm text-fog transition-colors hover:text-paper"

@@ -24,7 +24,7 @@ export default function IndustriesPage() {
             <em className="serif-i text-fog">Your order.</em>
           </>
         }
-        subtitle="Book a demo and we will map NIZAM onto your operation: your sites, your teams, your workflows."
+        subtitle="Book a demo and we will map NizamOps onto your operation: your sites, your teams, your workflows."
       />
     </main>
   );

@@ -11,15 +11,13 @@ import { prefersReducedMotion } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const OVERALL = Math.round(
-  ROADMAP.reduce((acc, p) => acc + p.progress, 0) / ROADMAP.length
-);
-
 const STATUS_LABEL: Record<string, string> = {
-  done: "Complete",
-  active: "In Development",
-  next: "Planned",
+  complete: "Complete",
+  current: "In Progress",
+  upcoming: "Upcoming",
 };
+
+const CURRENT_INDEX = ROADMAP.findIndex((s) => s.status === "current");
 
 export default function Roadmap() {
   const ref = useRef<HTMLElement>(null);
@@ -28,7 +26,7 @@ export default function Roadmap() {
     () => {
       if (prefersReducedMotion()) return;
 
-      // spine draws down as you travel the timeline
+      // spine draws down as you travel the timeline, stopping at the current stage
       gsap.fromTo(
         "[data-spine]",
         { scaleY: 0 },
@@ -45,33 +43,15 @@ export default function Roadmap() {
         }
       );
 
-      // per-phase progress bars fill on entry
-      gsap.utils.toArray<HTMLElement>("[data-progress]").forEach((bar) => {
-        gsap.fromTo(
-          bar,
-          { scaleX: 0 },
-          {
-            scaleX: (parseFloat(bar.dataset.progress || "0") || 0) / 100,
-            transformOrigin: "left center",
-            duration: 1.4,
-            ease: "power3.inOut",
-            scrollTrigger: { trigger: bar, start: "top 88%", once: true },
-          }
-        );
-      });
-
-      // big number counts to overall completion
-      const el = document.querySelector<HTMLElement>("[data-overall]");
-      if (el) {
-        const obj = { v: 0 };
-        gsap.to(obj, {
-          v: OVERALL,
-          duration: 2,
-          ease: "power2.out",
-          scrollTrigger: { trigger: el, start: "top 85%", once: true },
-          onUpdate: () => (el.textContent = String(Math.round(obj.v))),
+      gsap.utils.toArray<HTMLElement>("[data-stage]").forEach((node) => {
+        gsap.from(node, {
+          opacity: 0,
+          x: 24,
+          duration: 0.9,
+          ease: "power3.out",
+          scrollTrigger: { trigger: node, start: "top 85%", once: true },
         });
-      }
+      });
     },
     { scope: ref }
   );
@@ -95,16 +75,16 @@ export default function Roadmap() {
               </Reveal>
               <FadeIn className="mt-8 max-w-md">
                 <p className="text-base leading-relaxed text-fog">
-                  No vaporware. This is the actual state of the platform,
-                  updated as we ship. General availability arrives Q4 2026;
-                  the waitlist gets in first.
+                  No vaporware, no invented completion percentages: this is
+                  the actual sequence NizamOps is following, stage by stage,
+                  from the site you're looking at now to a full smart-city
+                  platform.
                 </p>
               </FadeIn>
               <FadeIn className="mt-12 border-t border-line pt-10">
-                <p className="eyebrow mb-4">Overall development progress</p>
-                <p className="display text-[clamp(4rem,8vw,7rem)] leading-none text-paper">
-                  <span data-overall>0</span>
-                  <span className="text-accent">%</span>
+                <p className="eyebrow mb-4">Current stage</p>
+                <p className="display text-[clamp(2rem,4vw,3.2rem)] leading-tight text-paper">
+                  {ROADMAP[CURRENT_INDEX]?.title ?? ROADMAP[0].title}
                 </p>
               </FadeIn>
             </div>
@@ -116,54 +96,34 @@ export default function Roadmap() {
             <div aria-hidden data-spine className="absolute top-0 bottom-0 left-[3px] w-px bg-accent" />
 
             <ol className="flex flex-col gap-16 pl-10 md:gap-20">
-              {ROADMAP.map((phase) => (
-                <li key={phase.quarter} className="relative">
+              {ROADMAP.map((stage) => (
+                <li key={stage.index} data-stage className="relative">
                   <span
                     aria-hidden
                     className={`absolute top-2 -left-[36.5px] h-[7px] w-[7px] rounded-full ${
-                      phase.status === "next" ? "bg-grey" : "bg-accent"
+                      stage.status === "upcoming" ? "bg-grey" : "bg-accent"
                     }`}
                   />
-                  <FadeIn>
-                    <div className="flex flex-wrap items-baseline justify-between gap-3">
-                      <p className="font-mono text-xs tracking-[0.25em] text-accent">
-                        {phase.quarter}
-                      </p>
-                      <p
-                        className={`rounded-full border px-3 py-1 font-mono text-[0.5625rem] uppercase tracking-[0.18em] ${
-                          phase.status === "active"
-                            ? "border-accent/50 text-accent"
-                            : phase.status === "done"
-                              ? "border-line-strong text-fog"
-                              : "border-line text-grey"
-                        }`}
-                      >
-                        {STATUS_LABEL[phase.status]}
-                      </p>
-                    </div>
-                    <h3 className="display mt-3 text-3xl md:text-5xl">{phase.title}</h3>
-
-                    <div className="mt-6 flex items-center gap-4">
-                      <div className="h-px flex-1 bg-line">
-                        <div
-                          data-progress={phase.progress}
-                          className="h-px origin-left scale-x-0 bg-accent"
-                        />
-                      </div>
-                      <p className="font-mono text-[0.625rem] tracking-[0.15em] text-fog tabular-nums">
-                        {phase.progress}%
-                      </p>
-                    </div>
-
-                    <ul className="mt-6 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
-                      {phase.items.map((item) => (
-                        <li key={item} className="flex items-baseline gap-3 text-sm text-fog">
-                          <span aria-hidden className="text-accent/70">—</span>
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </FadeIn>
+                  <div className="flex flex-wrap items-baseline justify-between gap-3">
+                    <p className="font-mono text-xs tracking-[0.25em] text-accent">
+                      {stage.index}
+                    </p>
+                    <p
+                      className={`rounded-full border px-3 py-1 font-mono text-[0.5625rem] uppercase tracking-[0.18em] ${
+                        stage.status === "current"
+                          ? "border-accent/50 text-accent"
+                          : stage.status === "complete"
+                            ? "border-line-strong text-fog"
+                            : "border-line text-grey"
+                      }`}
+                    >
+                      {STATUS_LABEL[stage.status]}
+                    </p>
+                  </div>
+                  <h3 className="display mt-3 text-3xl md:text-5xl">{stage.title}</h3>
+                  <p className="mt-4 max-w-md text-sm leading-relaxed text-fog">
+                    {stage.description}
+                  </p>
                 </li>
               ))}
             </ol>

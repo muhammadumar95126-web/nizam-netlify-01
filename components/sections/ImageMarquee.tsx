@@ -5,10 +5,10 @@ import Marquee from "@/components/ui/Marquee";
 import TransitionLink from "@/components/ui/TransitionLink";
 import { INDUSTRIES } from "@/lib/data";
 
-/** Living strip of the worlds NIZAM serves — hover restores color. */
+/** Living strip of the worlds NizamOps serves — hover restores color. */
 export default function ImageMarquee() {
   return (
-    <section className="section hairline-t py-6 md:py-8" aria-label="Industries NIZAM serves">
+    <section className="section hairline-t py-6 md:py-8" aria-label="Industries NizamOps serves">
       <Marquee duration={80}>
         {INDUSTRIES.map((ind) => (
           <TransitionLink

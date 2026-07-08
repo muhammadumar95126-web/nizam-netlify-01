@@ -76,17 +76,18 @@ export default function About() {
         </FadeIn>
 
         <h2 id="about-title" className="sr-only">
-          About NIZAM
+          About NizamOps
         </h2>
 
         <p
           data-wordfill
           className="display max-w-6xl text-[clamp(2.1rem,5.4vw,4.9rem)] leading-[1.06]"
         >
-          Every organization runs on operations. Yet operations still run on
-          scattered tools, paper trails and untracked promises. NIZAM was
-          founded on a single conviction: that the physical world deserves
-          software as disciplined as the people who run it.
+          We kept watching the same scene repeat: a maintenance request lost
+          in a WhatsApp thread, a spreadsheet that only one person understood,
+          an asset nobody could locate until it broke. Not from a lack of
+          effort, but from a lack of a system built for how operations
+          actually run. NizamOps exists because that gap was worth closing properly.
         </p>
 
         <div className="mt-16 grid gap-10 md:mt-24 md:grid-cols-12">

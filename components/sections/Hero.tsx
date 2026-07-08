@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -13,8 +13,26 @@ import { prefersReducedMotion } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
+const PARTICLE_COUNT = 16;
+
 export default function Hero() {
   const ref = useRef<HTMLElement>(null);
+  const moveX = useRef<((v: number) => void) | null>(null);
+  const moveY = useRef<((v: number) => void) | null>(null);
+
+  // stable random particle field, computed once per mount
+  const particles = useMemo(
+    () =>
+      Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
+        id: i,
+        left: 40 + Math.random() * 58,
+        top: 8 + Math.random() * 84,
+        size: 2 + Math.random() * 3,
+        duration: 7 + Math.random() * 8,
+        delay: Math.random() * 6,
+      })),
+    []
+  );
 
   useGSAP(
     () => {
@@ -60,16 +78,60 @@ export default function Hero() {
         ease: "power4.inOut",
         delay: 1.1,
       });
+
+      // mouse-driven parallax on the Meridian layer
+      const canvasEl = ref.current?.querySelector<HTMLElement>("[data-hero-canvas]");
+      if (canvasEl) {
+        moveX.current = gsap.quickTo(canvasEl, "x", { duration: 1.1, ease: "power3.out" });
+        moveY.current = gsap.quickTo(canvasEl, "y", { duration: 1.1, ease: "power3.out" });
+      }
+
+      // soft diagonal light sweep, looping
+      gsap.fromTo(
+        "[data-light-sweep]",
+        { xPercent: -130, yPercent: -30 },
+        {
+          xPercent: 130,
+          yPercent: 30,
+          duration: 9,
+          ease: "sine.inOut",
+          repeat: -1,
+          repeatDelay: 2.5,
+        }
+      );
+
+      // floating particles drift and pulse
+      gsap.utils.toArray<HTMLElement>("[data-particle]").forEach((p) => {
+        gsap.to(p, {
+          y: `-=${18 + Math.random() * 26}`,
+          opacity: () => 0.15 + Math.random() * 0.35,
+          duration: () => 4 + Math.random() * 4,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
+          delay: Number(p.dataset.delay || 0),
+        });
+      });
     },
     { scope: ref }
   );
+
+  const onPointerMove = (e: React.MouseEvent) => {
+    if (prefersReducedMotion() || !ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    const relX = (e.clientX - r.left) / r.width - 0.5;
+    const relY = (e.clientY - r.top) / r.height - 0.5;
+    moveX.current?.(relX * 22);
+    moveY.current?.(relY * 22);
+  };
 
   return (
     <section
       ref={ref}
       id="top"
+      onMouseMove={onPointerMove}
       className="section relative flex min-h-svh flex-col overflow-hidden"
-      aria-label="NIZAM: Built for Every Operation"
+      aria-label="NizamOps: One Platform. Every Operation."
     >
       {/* ambient light */}
       <div
@@ -80,6 +142,36 @@ export default function Hero() {
             "radial-gradient(ellipse 62% 55% at 72% 42%, rgba(194,168,120,0.075), transparent 65%), radial-gradient(ellipse 45% 40% at 20% 85%, rgba(239,237,231,0.035), transparent 70%)",
         }}
       />
+
+      {/* soft diagonal light sweep */}
+      <div
+        aria-hidden
+        data-light-sweep
+        className="pointer-events-none absolute -inset-y-1/2 left-1/3 w-1/3 opacity-40 mix-blend-screen"
+        style={{
+          background:
+            "linear-gradient(115deg, transparent 20%, rgba(194,168,120,0.12) 48%, transparent 78%)",
+        }}
+      />
+
+      {/* floating data particles */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        {particles.map((p) => (
+          <span
+            key={p.id}
+            data-particle
+            data-delay={p.delay}
+            className="absolute rounded-full bg-accent/50"
+            style={{
+              left: `${p.left}%`,
+              top: `${p.top}%`,
+              width: p.size,
+              height: p.size,
+              filter: "blur(0.5px)",
+            }}
+          />
+        ))}
+      </div>
 
       {/* the Meridian */}
       <div
@@ -110,7 +202,7 @@ export default function Hero() {
             delay={0.25}
             className="block text-[clamp(4.6rem,17.5vw,17rem)] leading-[0.88] tracking-[-0.045em]"
           >
-            NIZAM
+            NizamOps
           </Reveal>
           <Reveal
             as="span"
@@ -118,7 +210,7 @@ export default function Hero() {
             delay={0.6}
             className="mt-3 block text-[clamp(1.7rem,4.2vw,3.8rem)] font-normal tracking-[-0.02em] text-fog md:mt-5"
           >
-            Built for <em className="serif-i text-paper">Every</em> Operation.
+            One Platform. <em className="serif-i text-paper">Every</em> Operation.
           </Reveal>
         </h1>
 

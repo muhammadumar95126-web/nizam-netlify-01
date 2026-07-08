@@ -64,7 +64,7 @@ export default function Demo() {
               </Reveal>
               <FadeIn className="mt-8 max-w-md">
                 <p className="text-base leading-relaxed" style={{ color: "var(--grey)" }}>
-                  Thirty minutes. Your workflows, mapped live onto NIZAM by
+                  Thirty minutes. Your workflows, mapped live onto NizamOps by
                   someone who has run operations, not a slide deck.
                 </p>
               </FadeIn>

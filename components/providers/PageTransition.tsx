@@ -141,7 +141,7 @@ export default function PageTransition({ children }: { children: ReactNode }) {
           }}
         />
         <div ref={markRef} className="flex overflow-hidden">
-          {"NIZAM".split("").map((ch, i) => (
+          {"NizamOps".split("").map((ch, i) => (
             <span
               key={i}
               className="display inline-block text-[clamp(3rem,8vw,6rem)] tracking-[0.18em] text-paper"
@@ -150,7 +150,7 @@ export default function PageTransition({ children }: { children: ReactNode }) {
             </span>
           ))}
         </div>
-        <p className="eyebrow absolute bottom-10">Built for Every Operation</p>
+        <p className="eyebrow absolute bottom-10">One Platform. Every Operation.</p>
       </div>
     </TransitionCtx.Provider>
   );

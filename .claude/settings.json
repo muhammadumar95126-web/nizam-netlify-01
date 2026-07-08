@@ -1,7 +1,26 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git status *)"
+      "Bash(git status *)",
+      "Bash(curl -sL -o /tmp/qr-scan.jpg \"https://images.pexels.com/photos/4483942/pexels-photo-4483942.jpeg?cs=srgb&dl=pexels-tiger-lily-4483942.jpg&fm=jpg\")",
+      "Read(//tmp/**)",
+      "Bash(curl -sL -o /tmp/city-loop.mp4 --max-time 60 \"https://videos.pexels.com/video-files/6607871/6607871-uhd_2560_1440_30fps.mp4\")",
+      "Bash(curl -sI --max-time 20 \"https://videos.pexels.com/video-files/6607871/6607871-uhd_2560_1440_30fps.mp4\")",
+      "Bash(curl -sL -o /tmp/city-loop.mp4 --max-time 180 \"https://videos.pexels.com/video-files/6607871/6607871-uhd_2560_1440_30fps.mp4\")",
+      "Bash(ffmpeg -version)",
+      "Bash(curl -sI --max-time 15 \"https://videos.pexels.com/video-files/6607871/6607871-hd_1280_720_30fps.mp4\")",
+      "Bash(rm -f /tmp/city-loop.mp4)",
+      "Bash(curl -sL -o \"c:/Users/umerm/nizam/public/videos/skyline-loop.mp4\" --max-time 60 \"https://videos.pexels.com/video-files/6607871/6607871-hd_1280_720_30fps.mp4\")",
+      "Bash(cp /tmp/qr-scan.jpg \"c:/Users/umerm/nizam/public/images/qr-scan.jpg\")",
+      "Bash(sleep 5 && cat /tmp/dev.log)",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(curl -sI --max-time 15 \"https://videos.pexels.com/video-files/4941456/4941456-hd_1280_720_25fps.mp4\")",
+      "Bash(curl -sI --max-time 15 \"https://videos.pexels.com/video-files/4941456/4941456-hd_1920_1080_25fps.mp4\")",
+      "Bash(curl -sL -o /tmp/signature-candidate.mp4 --max-time 60 \"https://videos.pexels.com/video-files/4941456/4941456-hd_1920_1080_25fps.mp4\")",
+      "Bash(mv public/videos/skyline-loop.mp4 public/videos/skyline-loop.mp4.bak)",
+      "Bash(cp /tmp/signature-candidate.mp4 public/videos/signature-loop.mp4)",
+      "Bash(rm -f public/videos/skyline-loop.mp4.bak)",
+      "Bash(curl -s -o /tmp/home.html -w \"%{http_code}\\\\n\" \"http://localhost:3001/\")"
     ]
   }
 }
