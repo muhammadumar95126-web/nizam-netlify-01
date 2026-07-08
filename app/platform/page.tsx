@@ -6,6 +6,8 @@ import PlatformModules from "@/components/sections/PlatformModules";
 const HowItWorks = dynamic(() => import("@/components/sections/HowItWorks"));
 const MobileShowcase = dynamic(() => import("@/components/sections/MobileShowcase"));
 const Dashboard = dynamic(() => import("@/components/sections/Dashboard"));
+const DashboardPreview = dynamic(() => import("@/components/sections/DashboardPreview"));
+const ModuleCarousel = dynamic(() => import("@/components/sections/ModuleCarousel"));
 const Architecture = dynamic(() => import("@/components/sections/Architecture"));
 const AISection = dynamic(() => import("@/components/sections/AISection"));
 const CTABand = dynamic(() => import("@/components/ui/CTABand"));
@@ -35,8 +37,10 @@ export default function PlatformPage() {
       <HowItWorks />
       <MobileShowcase index="04" />
       <Dashboard index="05" />
-      <Architecture index="06" />
-      <AISection index="07" />
+      <DashboardPreview index="06" />
+      <ModuleCarousel index="07" />
+      <Architecture index="08" />
+      <AISection index="09" />
       <CTABand
         title={
           <>

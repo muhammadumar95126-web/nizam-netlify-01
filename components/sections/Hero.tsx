@@ -10,6 +10,7 @@ import FadeIn from "@/components/ui/FadeIn";
 import Magnetic from "@/components/ui/MagneticButton";
 import TransitionLink from "@/components/ui/TransitionLink";
 import { prefersReducedMotion } from "@/lib/utils";
+import { useWaitlistOverlay } from "@/lib/waitlist-context";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -19,6 +20,7 @@ export default function Hero() {
   const ref = useRef<HTMLElement>(null);
   const moveX = useRef<((v: number) => void) | null>(null);
   const moveY = useRef<((v: number) => void) | null>(null);
+  const { open: openWaitlist } = useWaitlistOverlay();
 
   // stable random particle field, computed once per mount
   const particles = useMemo(
@@ -227,7 +229,7 @@ export default function Hero() {
             <Magnetic as={TransitionLink} href="/book-demo" strength={0.25} className="btn btn-solid">
               Book Demo
             </Magnetic>
-            <Magnetic as={TransitionLink} href="/waitlist" strength={0.25} className="btn btn-ghost">
+            <Magnetic as="button" type="button" onClick={openWaitlist} strength={0.25} className="btn btn-ghost">
               Join Early Access
             </Magnetic>
           </FadeIn>

@@ -6,6 +6,8 @@ import PageTransition from "@/components/providers/PageTransition";
 import CustomCursor from "@/components/ui/CustomCursor";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { WaitlistOverlayProvider } from "@/lib/waitlist-context";
+import WaitlistOverlay from "@/components/WaitlistOverlay";
 
 const archivo = Archivo({
   subsets: ["latin"],
@@ -72,6 +74,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
   themeColor: "#0b0b0a",
 };
 
@@ -86,10 +89,13 @@ export default function RootLayout({
       <body className="grain">
         <SmoothScroll>
           <PageTransition>
-            <CustomCursor />
-            <Navbar />
-            {children}
-            <Footer />
+            <WaitlistOverlayProvider>
+              <CustomCursor />
+              <Navbar />
+              {children}
+              <Footer />
+              <WaitlistOverlay />
+            </WaitlistOverlayProvider>
           </PageTransition>
         </SmoothScroll>
       </body>

@@ -4,6 +4,7 @@ import Meridian from "@/components/canvas/Meridian";
 import Reveal from "@/components/ui/Reveal";
 import FadeIn from "@/components/ui/FadeIn";
 import TransitionLink from "@/components/ui/TransitionLink";
+import { useWaitlistOverlay } from "@/lib/waitlist-context";
 
 const CAPABILITIES = [
   {
@@ -29,6 +30,7 @@ const CAPABILITIES = [
 ];
 
 export default function AISection({ index = "06" }: { index?: string }) {
+  const { open: openWaitlist } = useWaitlistOverlay();
   return (
     <section id="ai" className="section hairline-t overflow-hidden" aria-labelledby="ai-title">
       {/* faint core behind everything */}
@@ -86,9 +88,9 @@ export default function AISection({ index = "06" }: { index?: string }) {
         </FadeIn>
 
         <FadeIn className="mt-16 text-center md:mt-20">
-          <TransitionLink href="/waitlist" className="btn btn-ghost">
+          <button type="button" onClick={openWaitlist} className="btn btn-ghost">
             Reserve Early Access
-          </TransitionLink>
+          </button>
         </FadeIn>
       </div>
     </section>

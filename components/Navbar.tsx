@@ -7,6 +7,7 @@ import { ArrowUpRight } from "lucide-react";
 import { NAV_LINKS } from "@/lib/data";
 import Magnetic from "@/components/ui/MagneticButton";
 import TransitionLink from "@/components/ui/TransitionLink";
+import { useWaitlistOverlay } from "@/lib/waitlist-context";
 import type Lenis from "lenis";
 
 const EASE = [0.76, 0, 0.24, 1] as const;
@@ -22,6 +23,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const pathname = usePathname();
+  const { open: openWaitlist } = useWaitlistOverlay();
 
   useEffect(() => {
     let last = 0;
@@ -52,7 +54,7 @@ export default function Navbar() {
   return (
     <>
       <motion.header
-        className="fixed inset-x-0 top-0 z-[100] mix-blend-difference"
+        className="safe-top safe-x fixed inset-x-0 top-0 z-[100] mix-blend-difference"
         animate={{ y: hidden && !open ? "-100%" : "0%" }}
         transition={{ duration: 0.5, ease: EASE }}
       >
@@ -127,7 +129,7 @@ export default function Navbar() {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 z-[90] flex flex-col justify-between overflow-y-auto bg-ink px-5 pt-24 pb-8 md:px-10 md:pt-28 md:pb-10"
+            className="safe-bottom safe-x fixed inset-0 z-[90] flex flex-col justify-between overflow-y-auto bg-ink px-5 pt-24 pb-8 md:px-10 md:pt-28 md:pb-10"
             initial={{ clipPath: "inset(0 0 100% 0)" }}
             animate={{ clipPath: "inset(0 0 0% 0)" }}
             exit={{ clipPath: "inset(0 0 100% 0)" }}
@@ -142,22 +144,40 @@ export default function Navbar() {
                     exit={{ y: "110%", transition: { duration: 0.4, ease: EASE } }}
                     transition={{ duration: 0.9, ease: EASE, delay: 0.12 + i * 0.05 }}
                   >
-                    <TransitionLink
-                      href={l.href}
-                      onClick={close}
-                      className="group flex items-baseline gap-4 py-0.5 text-paper"
-                    >
-                      <span className="font-mono text-[0.625rem] tracking-[0.25em] text-grey">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span
-                        className={`display text-[clamp(1.9rem,5.8vw,4.2rem)] transition-colors duration-300 ${
-                          pathname === l.href ? "text-accent" : "group-hover:text-accent"
-                        }`}
+                    {l.label === "Join Waitlist" ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          close();
+                          openWaitlist();
+                        }}
+                        className="group flex w-full items-baseline gap-4 py-0.5 text-left text-paper"
                       >
-                        {l.label}
-                      </span>
-                    </TransitionLink>
+                        <span className="font-mono text-[0.625rem] tracking-[0.25em] text-grey">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="display text-[clamp(1.9rem,5.8vw,4.2rem)] transition-colors duration-300 group-hover:text-accent">
+                          {l.label}
+                        </span>
+                      </button>
+                    ) : (
+                      <TransitionLink
+                        href={l.href}
+                        onClick={close}
+                        className="group flex items-baseline gap-4 py-0.5 text-paper"
+                      >
+                        <span className="font-mono text-[0.625rem] tracking-[0.25em] text-grey">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span
+                          className={`display text-[clamp(1.9rem,5.8vw,4.2rem)] transition-colors duration-300 ${
+                            pathname === l.href ? "text-accent" : "group-hover:text-accent"
+                          }`}
+                        >
+                          {l.label}
+                        </span>
+                      </TransitionLink>
+                    )}
                   </motion.div>
                 </div>
               ))}

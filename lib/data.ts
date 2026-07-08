@@ -481,7 +481,7 @@ export type RoadmapStage = {
 export const ROADMAP: RoadmapStage[] = [
   {
     index: "01",
-    title: "Website Launch",
+    title: "Website",
     description: "The platform's story, industries and modules, live for the world to see.",
     status: "complete",
   },
@@ -493,30 +493,42 @@ export const ROADMAP: RoadmapStage[] = [
   },
   {
     index: "03",
-    title: "Pilot Organizations",
-    description: "Real operations, running on NizamOps, in production, with direct feedback into the roadmap.",
+    title: "Dashboard",
+    description: "The Operations Command Center: live work, live assets, live accountability, in one pane of glass.",
     status: "upcoming",
   },
   {
     index: "04",
-    title: "Public Launch",
-    description: "General availability, with onboarding, documentation and support ready for every industry.",
+    title: "PWA Launch",
+    description: "NizamOps installs directly from the browser: desktop, tablet and mobile, no app store required.",
     status: "upcoming",
   },
   {
     index: "05",
-    title: "NizamOps AI",
+    title: "AI Assistant",
     description: "Predictive maintenance, intelligent triage and natural-language operations, layered onto the core.",
     status: "upcoming",
   },
   {
     index: "06",
-    title: "IoT Integration",
-    description: "Sensors and connected assets feeding live data straight into the operational record.",
+    title: "Enterprise Integrations",
+    description: "SSO, ERP and IoT connectors bringing NizamOps into the systems you already run.",
     status: "upcoming",
   },
   {
     index: "07",
+    title: "Public Release",
+    description: "General availability, with onboarding, documentation and support ready for every industry.",
+    status: "upcoming",
+  },
+  {
+    index: "08",
+    title: "Marketplace",
+    description: "Third-party modules and integrations, extending the platform without leaving it.",
+    status: "upcoming",
+  },
+  {
+    index: "09",
     title: "Smart City Platform",
     description: "NizamOps as shared infrastructure for cities and large estates operating at civic scale.",
     status: "upcoming",
@@ -797,4 +809,34 @@ export const MOBILE_STEPS: MobileStep[] = [
   { index: "04", title: "Uploading Evidence", caption: "Photo proof attaches directly to the record, timestamped and geo-tagged." },
   { index: "05", title: "Completing the Job", caption: "A signature or supervisor sign-off closes the loop on the spot." },
   { index: "06", title: "Back to Dashboard", caption: "The completed job updates the live dashboard for every stakeholder, instantly." },
+];
+
+export type FutureModule = { index: string; name: string; body: string };
+
+export const FUTURE_MODULES: FutureModule[] = [
+  { index: "01", name: "Operations Command Center", body: "The live view of everything running across every site, in one pane of glass." },
+  { index: "02", name: "Service Requests", body: "Every request, one front door, classified and routed the moment it arrives." },
+  { index: "03", name: "Asset Management", body: "A living registry of every asset: location, condition, warranty and lifetime cost." },
+  { index: "04", name: "Maintenance", body: "Preventive schedules and readings that keep critical systems ahead of failure." },
+  { index: "05", name: "Work Orders", body: "The operational unit of record, assigned, costed and closed with proof." },
+  { index: "06", name: "Analytics", body: "SLA performance, cost per asset and team utilization, in one source of truth." },
+  { index: "07", name: "Inspections", body: "Digital rounds and audits with scoring, photo evidence and auto follow-ups." },
+  { index: "08", name: "Reports", body: "Board-ready exports generated as a by-product of work, not extra work." },
+  { index: "09", name: "Inventory", body: "Parts and stock levels tracked against every work order that consumes them." },
+  { index: "10", name: "Field Operations", body: "Offline-capable tasking and live dispatch for distributed teams." },
+  { index: "11", name: "NizamOps AI", body: "Predictive maintenance and intelligent triage, learning from every closed loop." },
+];
+
+export type InstallFlowNode = { index: string; title: string; body: string };
+
+export const INSTALL_FLOW: InstallFlowNode[] = [
+  { index: "01", title: "Cloud", body: "One secure, multi-tenant backbone serving every device and every organization." },
+  { index: "02", title: "Web", body: "Full platform access from any modern browser, no installation required." },
+  { index: "03", title: "Desktop", body: "Installed as a native-feeling app on Windows and macOS, straight from the browser." },
+  { index: "04", title: "Tablet", body: "The same interface, optimized for reception desks and supervisor rounds." },
+  { index: "05", title: "Android", body: "Installs directly from Chrome, no Google Play dependency required." },
+  { index: "06", title: "iPhone", body: "Installs from Safari, works and feels like a native iOS app." },
+  { index: "07", title: "Field Worker", body: "Offline-capable tasking, QR scanning and evidence capture, on the device they carry." },
+  { index: "08", title: "Office Staff", body: "Reception and coordination, live, without switching between tools." },
+  { index: "09", title: "Executives", body: "One rolled-up view of the entire operation, on whatever screen is nearest." },
 ];

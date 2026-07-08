@@ -12,9 +12,13 @@ const Workflow = dynamic(() => import("@/components/sections/Workflow"));
 const WhoUsesNizam = dynamic(() => import("@/components/sections/WhoUsesNizam"));
 const Modules = dynamic(() => import("@/components/sections/Modules"));
 const Dashboard = dynamic(() => import("@/components/sections/Dashboard"));
+const DashboardPreview = dynamic(() => import("@/components/sections/DashboardPreview"));
 const MobileShowcase = dynamic(() => import("@/components/sections/MobileShowcase"));
 const TrustSecurity = dynamic(() => import("@/components/sections/TrustSecurity"));
+const ModuleCarousel = dynamic(() => import("@/components/sections/ModuleCarousel"));
 const Architecture = dynamic(() => import("@/components/sections/Architecture"));
+const PWASection = dynamic(() => import("@/components/sections/PWASection"));
+const InstallAnywhere = dynamic(() => import("@/components/sections/InstallAnywhere"));
 const VideoBand = dynamic(() => import("@/components/VideoBand"));
 const AISection = dynamic(() => import("@/components/sections/AISection"));
 const CTABand = dynamic(() => import("@/components/ui/CTABand"));
@@ -35,11 +39,15 @@ export default function Home() {
         <Modules />
         <Dashboard index="08" />
       </IndustryProvider>
-      <MobileShowcase index="09" />
-      <TrustSecurity index="10" />
-      <Architecture index="11" />
+      <DashboardPreview index="09" />
+      <MobileShowcase index="10" />
+      <TrustSecurity index="11" />
+      <ModuleCarousel index="12" />
+      <Architecture index="13" />
+      <PWASection index="14" />
+      <InstallAnywhere index="15" />
       <VideoBand />
-      <AISection index="12" />
+      <AISection index="16" />
       <CTABand />
     </main>
   );

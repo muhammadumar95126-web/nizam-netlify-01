@@ -6,8 +6,10 @@ import Magnetic from "@/components/ui/MagneticButton";
 import TransitionLink from "@/components/ui/TransitionLink";
 import { PRICING } from "@/lib/data";
 import { Check } from "lucide-react";
+import { useWaitlistOverlay } from "@/lib/waitlist-context";
 
 export default function Pricing() {
+  const { open: openWaitlist } = useWaitlistOverlay();
   return (
     <section
       id="pricing"
@@ -86,23 +88,44 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Magnetic
-                as={TransitionLink}
-                href={tier.ctaType === "demo" ? "/book-demo" : "/waitlist"}
-                strength={0.2}
-                className={`btn mt-10 w-full ${
-                  tier.featured
-                    ? "btn-solid !border-paper !bg-paper !text-ink"
-                    : "btn-ghost !border-ink/30 !text-ink hover:!text-paper"
-                }`}
-                style={
-                  tier.featured
-                    ? undefined
-                    : ({ "--foreground": "var(--ink)", "--background": "var(--paper)" } as React.CSSProperties)
-                }
-              >
-                {tier.cta}
-              </Magnetic>
+              {tier.ctaType === "demo" ? (
+                <Magnetic
+                  as={TransitionLink}
+                  href="/book-demo"
+                  strength={0.2}
+                  className={`btn mt-10 w-full ${
+                    tier.featured
+                      ? "btn-solid !border-paper !bg-paper !text-ink"
+                      : "btn-ghost !border-ink/30 !text-ink hover:!text-paper"
+                  }`}
+                  style={
+                    tier.featured
+                      ? undefined
+                      : ({ "--foreground": "var(--ink)", "--background": "var(--paper)" } as React.CSSProperties)
+                  }
+                >
+                  {tier.cta}
+                </Magnetic>
+              ) : (
+                <Magnetic
+                  as="button"
+                  type="button"
+                  onClick={openWaitlist}
+                  strength={0.2}
+                  className={`btn mt-10 w-full ${
+                    tier.featured
+                      ? "btn-solid !border-paper !bg-paper !text-ink"
+                      : "btn-ghost !border-ink/30 !text-ink hover:!text-paper"
+                  }`}
+                  style={
+                    tier.featured
+                      ? undefined
+                      : ({ "--foreground": "var(--ink)", "--background": "var(--paper)" } as React.CSSProperties)
+                  }
+                >
+                  {tier.cta}
+                </Magnetic>
+              )}
             </article>
           ))}
         </FadeIn>

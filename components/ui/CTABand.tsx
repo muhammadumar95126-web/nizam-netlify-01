@@ -6,6 +6,7 @@ import Reveal from "@/components/ui/Reveal";
 import FadeIn from "@/components/ui/FadeIn";
 import Magnetic from "@/components/ui/MagneticButton";
 import TransitionLink from "@/components/ui/TransitionLink";
+import { useWaitlistOverlay } from "@/lib/waitlist-context";
 
 type CTABandProps = {
   eyebrow?: string;
@@ -19,6 +20,7 @@ export default function CTABand({
   title,
   subtitle = "Private beta opens soon. Founding members get first access, priority onboarding and pricing that never expires.",
 }: CTABandProps) {
+  const { open: openWaitlist } = useWaitlistOverlay();
   return (
     <section className="section hairline-t relative overflow-hidden" aria-label="Get started">
       <div aria-hidden className="pointer-events-none absolute inset-0 opacity-30">
@@ -67,7 +69,7 @@ export default function CTABand({
           <Magnetic as={TransitionLink} href="/book-demo" strength={0.25} className="btn btn-solid">
             Book Demo
           </Magnetic>
-          <Magnetic as={TransitionLink} href="/waitlist" strength={0.25} className="btn btn-ghost">
+          <Magnetic as="button" type="button" onClick={openWaitlist} strength={0.25} className="btn btn-ghost">
             Join Waitlist
           </Magnetic>
         </FadeIn>

@@ -6,7 +6,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import Reveal from "@/components/ui/Reveal";
-import FadeIn from "@/components/ui/FadeIn";
+import ParallaxImage from "@/components/ui/ParallaxImage";
 import { prefersReducedMotion } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
@@ -54,6 +54,25 @@ export default function About() {
         ease: "power3.out",
         scrollTrigger: { trigger: "[data-stats]", start: "top 88%", once: true },
       });
+
+      // Arabic wordmark blooms in just behind the etymology line
+      gsap.from("[data-etym-ar]", {
+        opacity: 0,
+        scale: 0.85,
+        duration: 0.9,
+        delay: 0.45,
+        ease: "power3.out",
+        scrollTrigger: { trigger: "[data-etym]", start: "top 85%", once: true },
+      });
+
+      // the accompanying image reveals in lockstep with the opening statement
+      gsap.from("[data-about-image]", {
+        opacity: 0,
+        y: 40,
+        duration: 1.1,
+        ease: "power3.out",
+        scrollTrigger: { trigger: "[data-wordfill]", start: "top 85%", once: true },
+      });
     },
     { scope: ref }
   );
@@ -66,29 +85,47 @@ export default function About() {
           <p className="eyebrow hidden md:block">About</p>
         </div>
 
-        <FadeIn className="mb-10 md:mb-14">
-          <p className="font-serif text-[clamp(1.5rem,3vw,2.6rem)] text-fog">
+        <div data-etym className="mb-14 md:mb-20">
+          <Reveal
+            as="p"
+            className="font-serif text-[clamp(1.6rem,3.4vw,3rem)] text-fog"
+            start="top 90%"
+          >
             Nizam <span className="text-accent">·</span>{" "}
-            <span dir="rtl" lang="ar" className="tracking-normal">نظام</span>{" "}
+            <span data-etym-ar dir="rtl" lang="ar" className="inline-block tracking-normal text-paper">
+              نظام
+            </span>{" "}
             <span className="text-accent">·</span>{" "}
             <em>Arabic: order, system, arrangement.</em>
-          </p>
-        </FadeIn>
+          </Reveal>
+        </div>
 
         <h2 id="about-title" className="sr-only">
           About NizamOps
         </h2>
 
-        <p
-          data-wordfill
-          className="display max-w-6xl text-[clamp(2.1rem,5.4vw,4.9rem)] leading-[1.06]"
-        >
-          We kept watching the same scene repeat: a maintenance request lost
-          in a WhatsApp thread, a spreadsheet that only one person understood,
-          an asset nobody could locate until it broke. Not from a lack of
-          effort, but from a lack of a system built for how operations
-          actually run. NizamOps exists because that gap was worth closing properly.
-        </p>
+        <div className="grid gap-12 md:grid-cols-12 md:items-center md:gap-10">
+          <p
+            data-wordfill
+            className="display max-w-2xl text-[clamp(2rem,4.6vw,3.9rem)] leading-[1.08] md:col-span-7"
+          >
+            We kept watching the same scene repeat: a maintenance request lost
+            in a WhatsApp thread, a spreadsheet that only one person understood,
+            an asset nobody could locate until it broke. Not from a lack of
+            effort, but from a lack of a system built for how operations
+            actually run. NizamOps exists because that gap was worth closing properly.
+          </p>
+
+          <div data-about-image className="md:col-span-5">
+            <ParallaxImage
+              src="/images/blueprint-compass.jpg"
+              alt="A compass laid across architectural blueprints, measuring precision and order"
+              className="aspect-[4/5] w-full"
+              sizes="(max-width: 768px) 100vw, 40vw"
+              speed={0.7}
+            />
+          </div>
+        </div>
 
         <div className="mt-16 grid gap-10 md:mt-24 md:grid-cols-12">
           <div className="md:col-span-5 md:col-start-8">
